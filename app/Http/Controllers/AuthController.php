@@ -46,4 +46,41 @@ class AuthController extends Controller
 
 
     }
+
+    //Función para loguearnos
+
+    public function login(Request $request){
+        $validator = Validator::make($request->all(),[
+            'email' => 'required | string | email | max:100 ',
+            'password' => 'required | string | min: 8'
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors(), 422);
+        }
+
+        $credentials = $request->only([
+            'email',
+            'password'
+        ]);
+
+        //Validar las credenciales, usuario y contraseña, si no son correctas devolveré un error.
+
+        try{
+            if(!$token = JWTAuth::attempt($credentials)){
+                return response()->json([
+                    'messaje' => 'Invalid credentials',
+                ], 401);
+            }
+            return response() ->json([
+                'message' => 'Usuario logueado correctamente',
+                'token' => $token,
+            ], 200);
+        }catch(JWTException $e){
+            return  response()->json([
+                'error' => 'No se ha podido crear el token',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

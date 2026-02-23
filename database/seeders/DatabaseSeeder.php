@@ -8,6 +8,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Pelicula;
 use App\Models\Serie;
 
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -15,7 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::factory(10)->create();
 
         Pelicula::factory(10)->create();
         Serie::factory(10)->create();

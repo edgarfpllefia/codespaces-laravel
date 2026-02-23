@@ -12,6 +12,12 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+//Middleware con la ruta protegida
+Route::middleware([IsUserAuth::class])->group(function (){
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('me', [AuthController::class, 'getUser']);
+});
+
 Route::get('/peliculas', [PeliculasController::class, 'index']);
 
 Route::post('/peliculas', [PeliculasController::class, 'store']);
@@ -29,4 +35,7 @@ Route::delete('/series/{id}', [SerieController::class, 'eliminar']);
 //Esto llama
 Route::get('/series/{id}', [SerieController::class, 'show']);
 
+
+//Esta dos que tengo aquí son las públicas (Entrar sin token)
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
