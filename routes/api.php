@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PeliculasController;
 use App\Http\Controllers\SerieController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,3 +28,5 @@ Route::put('/series/{id}', [SerieController::class, 'update']);
 Route::delete('/series/{id}', [SerieController::class, 'eliminar']);
 //Esto llama
 Route::get('/series/{id}', [SerieController::class, 'show']);
+
+Route::post('/register', [AuthController::class, 'register']);
