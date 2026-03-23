@@ -18,6 +18,6 @@ class isUserAuth
         if (auth('api')->user()){
             return $next($request); //Puedes pasar al siguiente middleware o al controlador
         }
-        return response() -> json(['message' => 'Unauthorizeddddddddddd'], 401);
+        return response() -> json(['message' => 'Sin autorización, no estás autenticado'], 401);
     }
 }
