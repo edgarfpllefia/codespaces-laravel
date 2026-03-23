@@ -7,31 +7,42 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PeliculasController;
 use App\Http\Controllers\SerieController;
 use App\Http\Controllers\AuthController;
+use App\Http\Middleware\isUserAuth;
+use App\Http\Middleware\isAdmin;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-//Middleware con la ruta protegida
+//Middleware con las rutas protegidas
 Route::middleware([IsUserAuth::class])->group(function (){
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('me', [AuthController::class, 'getUser']);
+
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'getUser']);
+
+        Route::middleware([isAdmin::class])->group(function(){
+
+            Route::post('/peliculas', [PeliculasController::class, 'store']);
+            Route::put('/peliculas/{id}', [PeliculasController::class, 'update']);
+            Route::delete('/peliculas/{id}', [PeliculasController::class, 'eliminar']);
+            Route::post('/series', [SerieController::class, 'store']);
+            Route::put('/series/{id}', [SerieController::class, 'update']);
+            Route::delete('/series/{id}', [SerieController::class, 'eliminar']);
+    });
 });
+
+
+//Rutas públicas
 
 Route::get('/peliculas', [PeliculasController::class, 'index']);
 
-Route::post('/peliculas', [PeliculasController::class, 'store']);
-Route::put('/peliculas/{id}', [PeliculasController::class, 'update']);
-Route::delete('/peliculas/{id}', [PeliculasController::class, 'eliminar']);
 //Esto llama
 Route::get('/peliculas/{id}', [PeliculasController::class, 'show']);
 
 
 Route::get('/series', [SerieController::class, 'index']);
 
-Route::post('/series', [SerieController::class, 'store']);
-Route::put('/series/{id}', [SerieController::class, 'update']);
-Route::delete('/series/{id}', [SerieController::class, 'eliminar']);
+
 //Esto llama
 Route::get('/series/{id}', [SerieController::class, 'show']);
 
