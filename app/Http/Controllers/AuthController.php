@@ -7,46 +7,104 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Auth; //Este modelo no es mio, ya viene instalado.
-
+use Illuminate\Support\Facades\Auth;
 
 
 class AuthController extends Controller
 {
-    // Función para registrar usuarios
-
     public function register(Request $request){
 
-    // Obtengo info de request, lo valido
+    //Valida los datos que mete el usuario
+    $validator = Validator::make($request->all(),[
+        'name' => 'required | string | max:100',
+        'role' => 'required | string | max:100 | in:admin,user',
+        'email' => 'required | string | email | max:100 | unique:users',
+        'password' => 'required | string | min:8 | confirmed',
+    ]);
 
-        $validator = Validator::make($request ->all(),[
-            'name' => 'required | string |max:100',
-            'role' => 'requited | string | max:100in:admin,user',
-            'email' => 'required | string |email | max:100 | unique:users',
-            'password' => 'required | string | min:8 | confirmed',
-        ]);
 
-
-// Si no paso la validación:
+    //Si el validador NO pasa
     if($validator->fails()){
-        return response() -> json($validator -> errors(), 422);
+    return response()->json($validator->errors(), 422);
     }
 
-    // Creo usuario si la paso
-$user = User::create([
-    'name' => $request -> get('name'),
-    'role' => $request -> get('role'),
-    'email' => $request -> get('email'),
-    'password' => bcrypt($request->get('password')),
-]);
+    //Si pasa
+    //Crea el usuario
 
-// Devuelvo el usuario ya creado
+    $user = User::create([
+        'name' => $request->get('name'),
+        'role' => $request->get('role'),
+        'email' => $request->get('email'),
+        'password' => bcrypt($request->get('password')),
+    ]);
 
-return response()->json([
-    'token' => $token,
-    'user' => $user,
-    'message' => 'Usuario registrado correctamente',
-], 201);
+    return response()->json([
+        'message' => 'Usuario creado satisfactoriamente',
+        'data' => $user,
+    ], 201);
 
+
+
+    }
+
+    //Función para loguearnos
+
+    public function login(Request $request){
+        $validator = Validator::make($request->all(),[
+            'email' => 'required | string | email | max:100 ',
+            'password' => 'required | string | min: 8'
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors(), 422);
+        }
+
+        $credentials = $request->only([
+            'email',
+            'password'
+        ]);
+
+        //Validar las credenciales, usuario y contraseña, si no son correctas devolveré un error.
+
+        try{
+            if(!$token = JWTAuth::attempt($credentials)){
+                return response()->json([
+                    'messaje' => 'Invalid credentials',
+                ], 401);
+            }
+            return response() ->json([
+                'message' => 'Usuario logueado correctamente',
+                'token' => $token,
+            ], 200);
+        }catch(JWTException $e){
+            return  response()->json([
+                'error' => 'No se ha podido crear el token',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    //Función para sacar mis datos del propio usuario /ME --> getUser()
+
+    public function getUser(){
+        $user = Auth::user();
+        return response() -> json([
+            'Mi perfil' => $user,
+        ], 200);
+    }
+
+    //Función para cerrar sesión y destruir el token
+
+    public function logout(){
+        try{
+            JWTAuth::invalidate(JWTAuth::getToken());
+            return response()->json([
+                'message' => "Token invalidado correctamente"
+            ], 200);
+        }catch(JWTException $e){
+            return response()->json([
+                'message' => 'Error al intentar invalidar el token',
+            ]);
+        }
     }
 }
