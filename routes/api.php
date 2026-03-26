@@ -2,16 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CategoriesController;
-use App\Http\Controllers\ProductsController;
-use App\Http\Controllers\UsersController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\IsUserAuth;
 use App\Http\Middleware\IsAdmin;
-
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
 
 
 //RUTAS PRIVADAS PROTEGIDAS POR MIDDLEWARE ISUSERAUTH Y ISADMIN
@@ -37,7 +33,7 @@ Route::middleware([IsUserAuth::class])->group(function (){
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{id}', [ProducController::class, 'show']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{id}', [CategoryController::class, 'show']);
 
