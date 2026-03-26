@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Auth; //Este modelo no es mio, ya viene instalado
 
 class AuthController extends Controller
 {
-    // Creo la funcion para registrar usuarios
+    // Función para registrar usuarios
 
     public function register(Request $request){
 
-    // Parte A, validación de datos. Una vez que he obtenido la información del request, voy a validarlo.
+    // Obtengo info de request, lo valido
 
         $validator = Validator::make($request ->all(),[
             'name' => 'required | string |max:100',
@@ -27,13 +27,12 @@ class AuthController extends Controller
         ]);
 
 
-//Si NO consigo pasar la validación...
+// Si no paso la validación:
     if($validator->fails()){
         return response() -> json($validator -> errors(), 422);
     }
 
-    //Si lo paso
-    //Crear usuario
+    // Creo usuario si la paso
 $user = User::create([
     'name' => $request -> get('name'),
     'role' => $request -> get('role'),
@@ -41,7 +40,7 @@ $user = User::create([
     'password' => bcrypt($request->get('password')),
 ]);
 
-//Devuelvo el usuario ya creado
+// Devuelvo el usuario ya creado
 
 return response()->json([
     'token' => $token,
