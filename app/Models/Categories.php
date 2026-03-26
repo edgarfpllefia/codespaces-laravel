@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Categories extends Model
 {
     use HasFactory;
+
+    protected $table = 'Categories';
+    protected $fillable = ['name', 'description'];
+
+    public $timestamps = false;
 }
+
