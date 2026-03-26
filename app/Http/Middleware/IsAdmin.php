@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class isUserAuth
+class IsAdmin
 {
     /**
      * Handle an incoming request.
@@ -15,9 +15,9 @@ class isUserAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth('api')->user()){
+         if (auth('api') ->user()?->role === "admin"){
             return $next($request);
         }
-        return response() -> json(['message' => 'Sin autorización, no estás autenticado'], 401);
+        return response() -> json(['message' => 'No eres administrador'], 401);
     }
 }

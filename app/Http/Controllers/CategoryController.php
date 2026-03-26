@@ -78,6 +78,19 @@ class CategoryController extends Controller
         $category->delete();
         return response()->json(['message' => 'Categoria eliminada correctamente'], 200);
     }
+
+    //CONSULTAS CRUZADAS
+
+    public function showWithProducts($id)
+{
+    $category = Category::with('products')->find($id);
+
+    if (!$category) {
+        return response()->json(['error' => 'Categoria no encontrada'], 404);
+    }
+
+    return response()->json(['category' => $category], 200);
+}
 }
 
 

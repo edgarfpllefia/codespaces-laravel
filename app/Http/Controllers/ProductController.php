@@ -90,4 +90,21 @@ class ProductController extends Controller
     $product->delete();
     return response()->json(['message' => 'Producto eliminado correctamente'], 200);
 }
+
+//CONSULTAS CRUZADAS
+
+public function getByCategory($categoryId)
+{
+    $products = Product::with('category')
+        ->where('category_id', $categoryId)
+        ->get();
+
+    if ($products->isEmpty()) {
+        return response()->json(['error' => 'No se encontraron productos'], 404);
+    }
+
+    return response()->json(['products' => $products], 200);
+}
+
+
 }
