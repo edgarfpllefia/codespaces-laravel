@@ -15,6 +15,9 @@ class isAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        return $next($request);
+         if (auth('api') ->user()?->role === "admin"){
+            return $next($request);
+        }
+        return response() -> json(['message' => 'No eres administrador'], 401);
     }
 }

@@ -15,6 +15,9 @@ class isUserAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        return $next($request);
+        if (auth('api')->user()){
+            return $next($request);
+        }
+        return response() -> json(['message' => 'Sin autorización, no estás autenticado'], 401);
     }
 }
