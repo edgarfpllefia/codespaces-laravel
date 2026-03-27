@@ -1,62 +1,189 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# API REST Laravel 11 - Tienda de Ropa
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST desarrollada con Laravel 11, JWT para autenticación y MySQL como base de datos.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requisitos
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.2+
+- Composer
+- MySQL
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Instalación local
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+# Clonar el repositorio
+git clone https://github.com/edgarfpllefia/codespaces-laravel
+cd tu-repo
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Instalar dependencias
+composer install
 
-## Laravel Sponsors
+# Copiar el fichero de entorno
+cp .env.example .env
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+# Generar la clave de la aplicación
+php artisan key:generate
 
-### Premium Partners
+# Generar el secret JWT
+php artisan jwt:secret
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
+### Configurar el fichero `.env`
 
-## Contributing
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=tu-host
+DB_PORT=3306
+DB_DATABASE=tu-database
+DB_USERNAME=tu-usuario
+DB_PASSWORD=tu-contraseña
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Ejecutar migraciones y seeders
 
-## Code of Conduct
+```bash
+php artisan migrate:fresh --seed
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Arrancar el servidor
 
-## Security Vulnerabilities
+```bash
+php artisan serve
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+La API estará disponible en `http://localhost:8000`
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## URL de producción (Railway)
+
+```
+https://codespaces-laravel-production-d065.up.railway.app
+```
+
+---
+
+## Autenticación
+
+La API utiliza JWT. Para acceder a las rutas protegidas hay que incluir el token en la cabecera:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+## Endpoints
+
+### Autenticación (públicos)
+
+| Método | Ruta            | Descripción                     |
+| ------ | --------------- | ------------------------------- |
+| POST   | `/api/register` | Registro de usuario             |
+| POST   | `/api/login`    | Login y obtención del token JWT |
+
+### Usuario autenticado
+
+| Método | Ruta          | Descripción                     |
+| ------ | ------------- | ------------------------------- |
+| GET    | `/api/me`     | Datos del usuario autenticado   |
+| POST   | `/api/logout` | Cerrar sesión e invalidar token |
+
+### Categorías (públicas)
+
+| Método | Ruta                            | Descripción                         |
+| ------ | ------------------------------- | ----------------------------------- |
+| GET    | `/api/categories`               | Listar todas las categorías         |
+| GET    | `/api/categories/{id}`          | Obtener categoría por ID            |
+| GET    | `/api/categories/{id}/products` | Obtener categoría con sus productos |
+
+### Categorías (solo admin)
+
+| Método | Ruta                   | Descripción          |
+| ------ | ---------------------- | -------------------- |
+| POST   | `/api/categories`      | Crear categoría      |
+| PUT    | `/api/categories/{id}` | Actualizar categoría |
+| DELETE | `/api/categories/{id}` | Eliminar categoría   |
+
+### Productos (públicos)
+
+| Método | Ruta                                  | Descripción                               |
+| ------ | ------------------------------------- | ----------------------------------------- |
+| GET    | `/api/products`                       | Listar todos los productos                |
+| GET    | `/api/products/{id}`                  | Obtener producto por ID                   |
+| GET    | `/api/products/category/{categoryId}` | Obtener productos filtrados por categoría |
+
+### Productos (solo admin)
+
+| Método | Ruta                 | Descripción         |
+| ------ | -------------------- | ------------------- |
+| POST   | `/api/products`      | Crear producto      |
+| PUT    | `/api/products/{id}` | Actualizar producto |
+| DELETE | `/api/products/{id}` | Eliminar producto   |
+
+---
+
+## Ejemplos de peticiones (Postman)
+
+### Registro
+
+```json
+POST /api/register
+{
+    "name": "Edgar",
+    "email": "edgar@gmail.com",
+    "password": "12345678",
+    "password_confirmation": "12345678"
+}
+```
+
+### Login
+
+```json
+POST /api/login
+{
+    "email": "edgar@gmail.com",
+    "password": "12345678"
+}
+```
+
+### Crear producto (requiere token admin)
+
+```json
+POST /api/products
+Authorization: Bearer <token>
+
+{
+    "name": "Camiseta básica",
+    "description": "Tejido 100% algodón",
+    "price": 19.99,
+    "stock": 50,
+    "size": "M",
+    "color": "Blanco",
+    "category_id": 1
+}
+```
+
+---
+
+## Roles de usuario
+
+- `user` — acceso a rutas públicas y `/me`, `/logout`
+- `admin` — acceso total, incluido CRUD de categorías y productos
+
+Los usuarios nuevos se registran siempre como `user`. Para crear un admin, modificar directamente en la base de datos o mediante seeder.
+
+Para esta prueba "SE QUE NO ES CORRECTO" puedes crear role: "admin" desde el POST en el /register. Para así poder hacer pruebas.
+
+---
+
+## Tecnologías
+
+- Laravel 11
+- JWT Auth (tymon/jwt-auth)
+- MySQL (AlwaysData)
+- Railway (despliegue)
